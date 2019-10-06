@@ -1,6 +1,6 @@
-CREATE DATABASE bamazon;
+CREATE DATABASE bamazon_db;
 
-USE bamazon;
+USE bamazon_db;
 
 CREATE TABLE products (
 	item_id INT NOT NULL AUTO_INCREMENT,
@@ -22,3 +22,5 @@ INSERT INTO products (product_name, department_name, price, stock_quantity)
         ("Flat Screen TV", "Electronics", 619.25, 24),
         ("Wireless Headphones", "Electronics", 99.95, 30),
         ("Laptop Sleeve", "Electronic Accessories", 20.75, 45);
+
+SELECT * FROM products;
