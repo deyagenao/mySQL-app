@@ -24,3 +24,5 @@ INSERT INTO products (product_name, department_name, price, stock_quantity)
         ("Laptop Sleeve", "Electronic Accessories", 20.75, 45);
 
 SELECT * FROM products;
+
+SELECT item_id, stock_quantity FROM products;
