@@ -28,3 +28,4 @@ INSERT INTO products (product_name, department_name, price, stock_quantity)
 SELECT * FROM products;
 
 SELECT item_id, stock_quantity FROM products;
+
