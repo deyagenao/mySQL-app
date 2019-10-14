@@ -113,9 +113,76 @@ function viewLowInventory(){
 
 // Add to Inventory: add to inventory, add to the stock quantity 
 function addToInventory(){
+    
+    connection.query("SELECT item_id, product_name, stock_quantity FROM products", function(err,data){
+        
+        if (err) throw err;
 
-    // rerun the menu program
-    viewMenu();
+        for (var i = 0; i < data.length; i++){
+
+            console.log(data[i].item_id, data[i].product_name, "|| Stock Quantity: ", data[i].stock_quantity)
+
+        }
+
+        inquirer.prompt([
+            { 
+                name: "productId",
+                type: "input",
+                message: "Please enter the item ID of the product you would like to add inventory to.",
+                validate: function (value){
+                    if (isNaN(value) === false){
+                        return true;
+                    }
+                    return false;
+                }
+            },
+            {
+                name: "addUnitsQuantity",
+                type: "input",
+                message: "How many units would you like to the inventory?",
+                validate: function(value){
+                    if(isNaN(value) === false){
+                        return true;
+                    }
+                    return false;
+                }
+            }
+        ]).then(function(answers){
+            
+            // check if the product ID entered matches a real product
+            var productExists = false;
+
+            for (var i = 0; i < data.length; i++){
+
+                if (data[i].item_id === parseInt(answers.productId)){
+                    // change the value of product exists 
+                    productExists = true;
+
+                    connection.query("UPDATE products SET ? WHERE ?",
+                    [
+                        {stock_quantity: data[i].stock_quantity + parseInt(answers.addUnitsQuantity)},
+                        {item_id: answers.productId}
+                    ],
+                    function(err){
+                        if (err) throw err 
+                        
+                    })
+
+                }
+            }
+
+            if (productExists === false) {
+                console.log("Oops, that was not a valid product ID number. Please try again.")
+                addToInventory();
+            }else{
+                console.log("\n\nProduct inventory updated!")
+                // rerun the menu program
+                viewMenu();
+            }
+
+        })
+        
+    })
 };
 
 
@@ -123,12 +190,53 @@ function addToInventory(){
 // Add New Product: add a completely new product 
 function addNewProduct(){
 
-    inquirer.prompt({
+    inquirer.prompt([
+        {
+            name: "productName",
+            type: "input",
+            message: "What is the name of the product you would like to add to the inventory?",
+        },
+        {
+            name: "departmentName",
+            type: "input",
+            message: "What department is this product in?"
+        },
+        {   name: "price",
+            type: "input",
+            message: "What is the price of this product?",
+            validate: function(value){
+                if(isNaN(value) === false){
+                    return true;
+                }
+                return false;
+            }
+        },
+        {
+            name: "stockQuantity",
+            type: "input",
+            message: "How many units of this product would you like to add to stock?",
+            validate: function(value){
+                if(isNaN(value) === false){
+                    return true;
+                }
+                return false;
+            }
+        }
+    ]).then(function(answer){
+        connection.query("INSERT INTO products SET ?", 
+            {
+                product_name: answer.productName,
+                department_name: answer.departmentName,
+                price: answer.price,
+                stock_quantity: answer.stockQuantity
+            },
+            function(err){
+                if (err) throw err; 
 
-    }).then(function(answer){
+                console.log("\n\nProduct added to inventory!");
 
+                // rerun the menu program
+                viewMenu();
+            })
     }) 
-
-    // rerun the menu program
-    viewMenu();
 };
